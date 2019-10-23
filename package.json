@@ -1,0 +1,23 @@
+{
+  "name": "shared-lists",
+  "version": "1.0.0",
+  "description": "Using Apache Cordova and NodeJS to build a shared list app",
+  "main": "index.js",
+  "dependencies": {
+    "mongodb": "^3.3.3"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sgreenholtz/shared-lists.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/sgreenholtz/shared-lists/issues"
+  },
+  "homepage": "https://github.com/sgreenholtz/shared-lists#readme"
+}
