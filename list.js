@@ -5,13 +5,6 @@ var List = /** @class */ (function () {
         this.alias = listName;
         this.privateList = privateList;
     }
-    List.prototype.addListItem = function (item) {
-        var listItem = {
-            _id: null,
-            title: item
-        };
-        this.items.push(listItem);
-    };
     List.prototype.removeListItem = function (id) {
         this.items = this.items.filter(function (element) {
             return element._id != id;
@@ -23,3 +16,12 @@ var List = /** @class */ (function () {
     return List;
 }());
 exports.List = List;
+function addListItem(list, item) {
+    var listItem = {
+        _id: null,
+        title: item
+    };
+    list.items.push(listItem);
+    return list;
+}
+exports.addListItem = addListItem;

@@ -2,20 +2,11 @@ export class List {
     _id:string;
     alias: string;
     private privateList: boolean;
-    private items: ListEntry[];
+    items: ListEntry[];
 
     constructor(listName: string, privateList:boolean) {
         this.alias=listName;
         this.privateList=privateList;
-    }
-
-    addListItem(item: string): void {
-        const listItem = {
-            _id: null,
-            title: item
-        };
-
-        this.items.push(listItem);
     }
 
     removeListItem(id: string): void {
@@ -27,6 +18,16 @@ export class List {
     isListPrivate(): boolean {
         return this.privateList;
     }
+}
+
+export function addListItem(list:List, item: string): List {
+    const listItem = {
+        _id: null,
+        title: item
+    };
+
+    list.items.push(listItem);
+    return list;
 }
 
 export interface ListEntry {
