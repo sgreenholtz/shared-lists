@@ -4,7 +4,9 @@
   "description": "Using Apache Cordova and NodeJS to build a shared list app",
   "main": "index.js",
   "dependencies": {
-    "mongodb": "^3.3.3"
+    "express": "^4.17.1",
+    "mongodb": "^3.3.3",
+    "restify": "^8.4.0"
   },
   "devDependencies": {},
   "scripts": {
