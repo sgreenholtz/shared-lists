@@ -7,6 +7,7 @@ var port = 3000;
 //TODO: Return the IDs of the items created!!
 //TODO: Null checks!!
 //TODO: What happens if I pass in the ID of a list or a list-item that doesn't exist?
+app.use(express.json());
 app.listen(port, function () { console.log("Listening on " + port); });
 app.get('/list', function (req, res) { res.send('This is the shared list API'); });
 app.post('/list/new', function (req, res) {
