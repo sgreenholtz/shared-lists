@@ -7,8 +7,13 @@ var dbName = 'shared-lists';
 var collectionName = 'lists';
 var mongoClient = new mongodb_1.MongoClient(url, {}); //{useUnifiedTopology:true}
 function createNewList(name, isPrivate) {
-    var newList = new list_1.List(name, isPrivate);
-    return insertNewList(newList);
+    if (!listExists(name)) {
+        var newList = new list_1.List(name, isPrivate);
+        return insertNewList(newList);
+    }
+    else {
+        return null;
+    }
 }
 exports.createNewList = createNewList;
 function insertNewList(list) {
@@ -24,17 +29,15 @@ function insertNewList(list) {
     });
     return list;
 }
-function addListItem(listName, listItem) {
+function addListItem(listId, listItem) {
     mongoClient.connect(function (err, db) {
         if (err)
             throw err;
-        if (!listExists(listName)) {
-            getCollection(db).updateOne({ alias: listName }, { $push: { items: { title: listItem } } }, function (err, res) {
-                if (err)
-                    throw err;
-                db.close();
-            });
-        }
+        getCollection(db).updateOne({ _id: listId }, { $push: { items: { title: listItem } } }, function (err, res) {
+            if (err)
+                throw err;
+            db.close();
+        });
     });
     return true;
 }
@@ -54,11 +57,11 @@ function listExists(listName) {
     return exists;
 }
 exports.listExists = listExists;
-function completeListItem(listName, listItemId) {
+function completeListItem(listId, listItemId) {
     mongoClient.connect(function (err, db) {
         if (err)
             throw err;
-        getCollection(db).updateOne({ alias: listName }, { $pull: { items: { _id: listItemId } } }, function (err, res) {
+        getCollection(db).updateOne({ _id: listId }, { $pull: { items: { _id: listItemId } } }, function (err, res) {
             if (err)
                 throw err;
             db.close();
@@ -67,14 +70,14 @@ function completeListItem(listName, listItemId) {
     return true;
 }
 exports.completeListItem = completeListItem;
-function deleteList(listName) {
+function deleteList(listId) {
     mongoClient.connect(function (err, db) {
         if (err)
             throw err;
-        getCollection(db).deleteOne({ alias: listName }, function (err, res) {
+        getCollection(db).deleteOne({ _id: listId }, function (err, res) {
             if (err)
                 throw err;
-            console.log(listName + " deleted");
+            console.log("1 list deleted");
             db.close();
         });
     });

@@ -3,6 +3,9 @@ import express = require('express');
 const app = express();
 const port = 3000;
 
+//TODO: Return the IDs of the items created!!
+//TODO: Null checks!!
+//TODO: What happens if I pass in the ID of a list or a list-item that doesn't exist?
 app.listen(port, ()=>{ console.log(`Listening on ${port}`) });
 app.get('/list',(req,res)=>{res.send('This is the shared list API')});
 app.post('/list/new', (req,res)=>{
@@ -15,5 +18,37 @@ app.post('/list/new', (req,res)=>{
         res.status(200).body(`List already exists with the name ${listName}`);
     } else {
         res.sendStatus(201);
+    }
+});
+app.post('/list/item/add', (req,res)=>{
+    const listId = req.body.listId;
+    const itemName = req.body.itemName;
+    console.log(`Adding ${itemName} to list ${listId}`);
+    const successfullyAdded = listRepo.addListItem(listId, itemName);
+    if (successfullyAdded) {
+        res.sendStatus(201);
+    } else {
+        res.sendStatus(500);
+    }
+});
+app.post('/list/item/complete', (req,res)=>{
+    const listId = req.body.listId;
+    const itemId = req.body.itemId;
+    console.log(`Setting item ${itemId} on list ${listId} as complete`);
+    const successfullyCompleted = listRepo.completeListItem(listId, itemId);
+    if (successfullyCompleted) {
+        res.sendStatus(200);
+    } else {
+        res.sendStatus(500);
+    }
+});
+app.post('/list/delete', (req,res)=>{
+    const listId = req.body.listId;
+    console.log(`Deleting list with id ${listId}`);
+    const successfullyDeleted = listRepo.deleteList(listId);
+    if (successfullyDeleted) {
+        res.sendStatus(200);
+    } else {
+        res.sendStatus(500);
     }
 });

@@ -27,10 +27,10 @@ function insertNewList(list:List):List {
     return list;
 }
 
-export function addListItem(listName:string, listItem:string):boolean {
+export function addListItem(listId:string, listItem:string):boolean {
     mongoClient.connect((err, db)=>{
         if (err) throw err;
-        getCollection(db).updateOne({alias:listName}, {$push: {items: {title: listItem}}} ,(err, res)=>{
+        getCollection(db).updateOne({_id:listId}, {$push: {items: {title: listItem}}} ,(err, res)=>{
             if (err) throw err;
             db.close();         
         });
@@ -52,10 +52,10 @@ export function listExists(listName: string):boolean {
     return exists;
 }
 
-export function completeListItem(listName: string, listItemId: number): boolean {
+export function completeListItem(listId: string, listItemId: number): boolean {
     mongoClient.connect((err,db)=>{
         if (err) throw err;
-        getCollection(db).updateOne({alias:listName}, {$pull:{items:{_id:listItemId}}}, (err,res)=>{
+        getCollection(db).updateOne({_id:listId}, {$pull:{items:{_id:listItemId}}}, (err,res)=>{
             if (err) throw err;
             db.close();
         });
@@ -63,12 +63,12 @@ export function completeListItem(listName: string, listItemId: number): boolean 
     return true;
 }
 
-export function deleteList(listName:string): boolean {
+export function deleteList(listId:string): boolean {
     mongoClient.connect((err, db)=>{
         if (err) throw err;
-        getCollection(db).deleteOne({alias:listName},(err,res)=>{
+        getCollection(db).deleteOne({_id:listId},(err,res)=>{
             if (err) throw err;
-            console.log(listName+" deleted");
+            console.log("1 list deleted");
             db.close();
         });
     });
