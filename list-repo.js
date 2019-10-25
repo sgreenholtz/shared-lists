@@ -30,16 +30,19 @@ function insertNewList(list) {
     return list;
 }
 function addListItem(listId, listItem) {
+    var entry;
     mongoClient.connect(function (err, db) {
         if (err)
             throw err;
         getCollection(db).updateOne({ _id: listId }, { $push: { items: { title: listItem } } }, function (err, res) {
             if (err)
                 throw err;
+            entry._id = res.insertedId;
+            entry.title = listItem;
             db.close();
         });
     });
-    return true;
+    return entry;
 }
 exports.addListItem = addListItem;
 function listExists(listName) {
@@ -48,6 +51,8 @@ function listExists(listName) {
         if (err)
             throw err;
         getCollection(db).findOne({ alias: listName }, function (err, res) {
+            if (err)
+                throw err;
             if (res != null) {
                 exists = true;
             }

@@ -1,4 +1,4 @@
-import {List} from "./list";
+import {List, ListEntry} from "./list";
 import {MongoClient} from 'mongodb';
 
 const url = 'mongodb://localhost:27070/shared-lists';
@@ -27,15 +27,18 @@ function insertNewList(list:List):List {
     return list;
 }
 
-export function addListItem(listId:string, listItem:string):boolean {
+export function addListItem(listId:string, listItem:string):ListEntry {
+    let entry: ListEntry;
     mongoClient.connect((err, db)=>{
         if (err) throw err;
         getCollection(db).updateOne({_id:listId}, {$push: {items: {title: listItem}}} ,(err, res)=>{
             if (err) throw err;
-            db.close();         
+            entry._id = res.insertedId;
+            entry.title = listItem;
+            db.close();
         });
     });
-    return true;
+    return entry;
 }
 
 export function listExists(listName: string):boolean {
@@ -43,6 +46,7 @@ export function listExists(listName: string):boolean {
     mongoClient.connect((err,db)=>{
         if (err) throw err;
         getCollection(db).findOne({alias:listName}, (err, res)=>{
+            if (err) throw err;
             if (res != null) {
                 exists = true;
             }
