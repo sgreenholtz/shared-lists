@@ -3,9 +3,13 @@ exports.__esModule = true;
 var list_1 = require("./list");
 var Database = require("better-sqlite3");
 var ListRepositoryImpl = /** @class */ (function () {
-    function ListRepositoryImpl() {
+    function ListRepositoryImpl(debug) {
         this.dbLocation = '../shared-lists.db';
-        this.db = new Database(this.dbLocation, { verbose: console.log, fileMustExist: true });
+        var options = { fileMustExist: true, verbose: null };
+        if (debug) {
+            options.verbose = console.log;
+        }
+        this.db = new Database(this.dbLocation, options);
     }
     ListRepositoryImpl.prototype.createNewList = function (name, isPrivate) {
         var newList = new list_1.List(name, isPrivate);
@@ -16,26 +20,50 @@ var ListRepositoryImpl = /** @class */ (function () {
         return newList;
     };
     ListRepositoryImpl.prototype.addListItem = function (listId, listItem) {
-        throw new Error("Method not implemented.");
+        var sql = 'INSERT INTO list_item (list_id, text) VALUES (?,?)';
+        var results = this.db.prepare(sql).run(listId, listItem);
+        return {
+            id: results.lastInsertRowid,
+            title: results.text
+        };
     };
     ListRepositoryImpl.prototype.listExists = function (listName) {
-        throw new Error("Method not implemented.");
+        return (this.getList(listName) != null);
     };
     ListRepositoryImpl.prototype.completeListItem = function (listId, listItemId) {
-        throw new Error("Method not implemented.");
+        var sql = 'UPDATE list_item SET completed=1 WHERE list_item_id=?';
+        var results = this.db.prepare(sql).run(listItemId);
+        return (results.changes === 1);
     };
     ListRepositoryImpl.prototype.deleteList = function (listId) {
-        throw new Error("Method not implemented.");
+        if (this.clearList(listId)) {
+            var sql = 'DELETE FROM list WHERE list_id=?';
+            var results = this.db.prepare(sql).run(listId);
+            return (results.changes === 1);
+        }
+        else {
+            return false;
+        }
+    };
+    ListRepositoryImpl.prototype.clearList = function (listId) {
+        var sql = 'DELETE FROM list_item WHERE list_id=?';
+        var results = this.db.prepare(sql).run(listId);
+        return (results.changes > 0);
     };
     ListRepositoryImpl.prototype.printAllLists = function () {
-        throw new Error("Method not implemented.");
+        console.log(this.db.prepare('SELECT * FROM list').all());
     };
     ListRepositoryImpl.prototype.getList = function (listName) {
         var sql = 'SELECT list_id, alias, private FROM list WHERE alias=?';
         var results = this.db.prepare(sql).get(listName);
-        var retreivedList = new list_1.List(results.alias, results.private);
-        retreivedList.setId(results.list_id);
-        return retreivedList;
+        if (results) {
+            var retreivedList = new list_1.List(results.alias, results.private);
+            retreivedList.setId(results.list_id);
+            return retreivedList;
+        }
+        else {
+            return null;
+        }
     };
     return ListRepositoryImpl;
 }());

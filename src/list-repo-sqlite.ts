@@ -6,8 +6,12 @@ export class ListRepositoryImpl implements ListRepository {
 
     private dbLocation = '../shared-lists.db';
     private db:any;
-    constructor() {
-        this.db = new Database(this.dbLocation, {verbose: console.log, fileMustExist: true});
+    constructor(debug?:boolean) {
+        const options = {fileMustExist: true, verbose:null};
+        if (debug) {
+            options.verbose = console.log;
+        }
+        this.db = new Database(this.dbLocation, options);
     }
 
     createNewList(name: string, isPrivate: boolean): List {
@@ -19,25 +23,47 @@ export class ListRepositoryImpl implements ListRepository {
         return newList;
     }    
     addListItem(listId: string, listItem: string): ListEntry {
-        throw new Error("Method not implemented.");
+        const sql = 'INSERT INTO list_item (list_id, text) VALUES (?,?)';
+        const results = this.db.prepare(sql).run(listId, listItem);
+        return {
+            id: results.lastInsertRowid,
+            title: results.text
+        };
     }
     listExists(listName: string): boolean {
-        throw new Error("Method not implemented.");
+        return (this.getList(listName) != null);
     }
     completeListItem(listId: string, listItemId: number): boolean {
-        throw new Error("Method not implemented.");
+        const sql = 'UPDATE list_item SET completed=1 WHERE list_item_id=?';
+        const results = this.db.prepare(sql).run(listItemId);
+        return (results.changes===1);
     }
     deleteList(listId: string): boolean {
-        throw new Error("Method not implemented.");
+        if (this.clearList(listId)) {
+            const sql = 'DELETE FROM list WHERE list_id=?';
+            const results = this.db.prepare(sql).run(listId);
+            return (results.changes===1);
+        } else {
+            return false;
+        }
+    }
+    clearList(listId: string): boolean {
+        const sql = 'DELETE FROM list_item WHERE list_id=?';
+        const results = this.db.prepare(sql).run(listId);
+        return (results.changes>0);
     }
     printAllLists(): void {
-        throw new Error("Method not implemented.");
+        console.log(this.db.prepare('SELECT * FROM list').all());
     }
     getList(listName:string): List {
         const sql = 'SELECT list_id, alias, private FROM list WHERE alias=?';
         const results = this.db.prepare(sql).get(listName);
-        const retreivedList = new List(results.alias, results.private);
-        retreivedList.setId(results.list_id);
-        return retreivedList;
+        if (results) {
+            const retreivedList = new List(results.alias, results.private);
+            retreivedList.setId(results.list_id);
+            return retreivedList;
+        } else {
+            return null;
+        }
     }
 }
