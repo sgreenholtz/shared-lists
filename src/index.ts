@@ -1,8 +1,9 @@
-import listRepo = require('./list-repo');
+import {ListRepositoryImpl} from './list-repo';
 import express = require('express');
 
 const app = express();
 const port = 3000;
+const listRepo = new ListRepositoryImpl();
 
 //TODO: Null checks!!
 //TODO: What happens if I pass in the ID of a list or a list-item that doesn't exist?
