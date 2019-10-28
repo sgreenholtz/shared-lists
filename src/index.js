@@ -1,9 +1,10 @@
 "use strict";
 exports.__esModule = true;
-var listRepo = require("./list-repo");
+var list_repo_mongo_1 = require("./list-repo-mongo");
 var express = require("express");
 var app = express();
 var port = 3000;
+var listRepo = new list_repo_mongo_1.ListRepositoryImpl();
 //TODO: Null checks!!
 //TODO: What happens if I pass in the ID of a list or a list-item that doesn't exist?
 app.use(express.json());

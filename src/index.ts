@@ -1,4 +1,4 @@
-import {ListRepositoryImpl} from './list-repo';
+import {ListRepositoryImpl} from './list-repo-mongo';
 import express = require('express');
 
 const app = express();
