@@ -1,9 +1,24 @@
 import {ListRepository} from './list-repo-interface';
+import {List, ListEntry} from './list';
+import Database = require('better-sqlite3');
 
 export class ListRepositoryImpl implements ListRepository {
-    createNewList(name: string, isPrivate: boolean): import("./list").List {
-        throw new Error("Method not implemented.");
-    }    addListItem(listId: string, listItem: string): import("./list").ListEntry {
+
+    private dbLocation = '../shared-lists.db';
+    private db:any;
+    constructor() {
+        this.db = new Database(this.dbLocation, {verbose: console.log, fileMustExist: true});
+    }
+
+    createNewList(name: string, isPrivate: boolean): List {
+        const newList = new List(name, isPrivate);
+        const sql = 'INSERT INTO list (alias,private) VALUES (?,?)';
+        const params = [name, (isPrivate?1:0)];
+        const results=this.db.prepare(sql).run(params);
+        newList.setId(results.lastInsertRowid);
+        return newList;
+    }    
+    addListItem(listId: string, listItem: string): ListEntry {
         throw new Error("Method not implemented.");
     }
     listExists(listName: string): boolean {
@@ -18,6 +33,11 @@ export class ListRepositoryImpl implements ListRepository {
     printAllLists(): void {
         throw new Error("Method not implemented.");
     }
-
-    
+    getList(listName:string): List {
+        const sql = 'SELECT list_id, alias, private FROM list WHERE alias=?';
+        const results = this.db.prepare(sql).get(listName);
+        const retreivedList = new List(results.alias, results.private);
+        retreivedList.setId(results.list_id);
+        return retreivedList;
+    }
 }

@@ -4,6 +4,7 @@
   "description": "Using Apache Cordova and NodeJS to build a shared list app",
   "main": "index.js",
   "dependencies": {
+    "better-sqlite3": "^5.4.3",
     "express": "^4.17.1",
     "http": "0.0.0",
     "https": "^1.0.0",

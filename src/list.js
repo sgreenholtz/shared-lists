@@ -14,6 +14,9 @@ var List = /** @class */ (function () {
     List.prototype.isListPrivate = function () {
         return this.privateList;
     };
+    List.prototype.setId = function (id) {
+        this.id = id;
+    };
     return List;
 }());
 exports.List = List;

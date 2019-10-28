@@ -1,5 +1,5 @@
 export class List {
-    id:string;
+    id:number;
     alias: string;
     private privateList: boolean;
     items: ListEntry[];
@@ -18,6 +18,10 @@ export class List {
 
     isListPrivate(): boolean {
         return this.privateList;
+    }
+
+    setId(id:number): void {
+        this.id = id;
     }
 }
 
