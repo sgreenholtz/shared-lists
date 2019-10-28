@@ -15,6 +15,7 @@ app.post('/list/new', function (req, res) {
     var listPrivate = req.body.private;
     console.log("Creating list " + listName + ", private=" + listPrivate);
     var listResult = listRepo.createNewList(listName, listPrivate);
+    console.log(listResult);
     if (listResult == null) {
         console.log("List already exists with the name " + listName);
         res.status(200).send("List already exists with the name " + listName).end();

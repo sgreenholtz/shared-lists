@@ -16,17 +16,14 @@ function createNewList(name, isPrivate) {
     }
 }
 exports.createNewList = createNewList;
+var insertedId = [];
 function insertNewList(list) {
     mongoClient.connect(function (err, db) {
         if (err)
             throw err;
-        getCollection(db).insertOne(list, function (err, res) {
-            if (err)
-                throw err;
-            list._id = res._id;
-            db.close();
-        });
+        getCollection(db).insertOne(list).then(function (result) { return console.log(result.insertedId); })["catch"](function (error) { return console.error(error); });
     });
+    list.id = insertedId[0];
     return list;
 }
 function addListItem(listId, listItem) {
@@ -37,7 +34,7 @@ function addListItem(listId, listItem) {
         getCollection(db).updateOne({ _id: listId }, { $push: { items: { title: listItem } } }, function (err, res) {
             if (err)
                 throw err;
-            entry._id = res.insertedId;
+            entry.id = res.insertedId;
             entry.title = listItem;
             db.close();
         });

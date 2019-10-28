@@ -1,5 +1,5 @@
 export class List {
-    _id:string;
+    id:string;
     alias: string;
     private privateList: boolean;
     items: ListEntry[];
@@ -7,11 +7,12 @@ export class List {
     constructor(listName: string, privateList:boolean) {
         this.alias=listName;
         this.privateList=privateList;
+        this.id = null;
     }
 
     removeListItem(id: string): void {
         this.items = this.items.filter((element)=>{
-            return element._id!=id;
+            return element.id!=id;
         })
     }
 
@@ -22,7 +23,7 @@ export class List {
 
 export function addListItem(list:List, item: string): List {
     const listItem = {
-        _id: null,
+        id: null,
         title: item
     };
 
@@ -31,6 +32,6 @@ export function addListItem(list:List, item: string): List {
 }
 
 export interface ListEntry {
-    _id: string;
+    id: string;
     title: string;
 }

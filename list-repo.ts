@@ -15,15 +15,14 @@ export function createNewList(name:string, isPrivate:boolean):List {
     }
 }
 
+var insertedId = [];
+
 function insertNewList(list:List):List {
     mongoClient.connect((err, db)=>{
         if (err) throw err;
-        getCollection(db).insertOne(list, (err, res)=>{
-            if (err) throw err;
-            list._id = res._id;
-            db.close();
-        });
+        getCollection(db).insertOne(list).then(result => console.log(result.insertedId)).catch(error => console.error(error));
     });
+    list.id = insertedId[0];
     return list;
 }
 
@@ -33,7 +32,7 @@ export function addListItem(listId:string, listItem:string):ListEntry {
         if (err) throw err;
         getCollection(db).updateOne({_id:listId}, {$push: {items: {title: listItem}}} ,(err, res)=>{
             if (err) throw err;
-            entry._id = res.insertedId;
+            entry.id = res.insertedId;
             entry.title = listItem;
             db.close();
         });

@@ -4,10 +4,11 @@ var List = /** @class */ (function () {
     function List(listName, privateList) {
         this.alias = listName;
         this.privateList = privateList;
+        this.id = null;
     }
     List.prototype.removeListItem = function (id) {
         this.items = this.items.filter(function (element) {
-            return element._id != id;
+            return element.id != id;
         });
     };
     List.prototype.isListPrivate = function () {
@@ -18,7 +19,7 @@ var List = /** @class */ (function () {
 exports.List = List;
 function addListItem(list, item) {
     var listItem = {
-        _id: null,
+        id: null,
         title: item
     };
     list.items.push(listItem);

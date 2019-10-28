@@ -1,28 +1,30 @@
-import mongo = require('mongodb');
+import {List, ListEntry} from "./list";
+import {MongoClient} from 'mongodb';
 
-const ids = ['5db2f78a3587ab0da94a0f8e'];
+const url = 'mongodb://localhost:27070/shared-lists';
+const dbName = 'shared-lists';
+const collectionName = 'lists';
+const mongoClient = new MongoClient(url, {}); //{useUnifiedTopology:true}
 
-const newId = mongo.MongoClient.connect('mongodb://localhost:27070/shared-lists', (err, db) => {
-    if (err) throw err;
-    db.db('shared-lists').collection('lists').insertOne({ alias: 'demo2', private: true }, (err, insertedDoc) => {
+export function createNewList(name:string, isPrivate:boolean):List {
+    const newList = new List(name, isPrivate);
+    return insertNewList(newList);
+}
+
+function insertNewList(list:List):List {
+    let id:string;
+    mongoClient.connect((err, db)=>{
         if (err) throw err;
-        db.close();
-        return insertedDoc.insertedId;
-    });
-});
-
-ids.push(newId);
-
-console.log(ids);
-
-mongo.MongoClient.connect('mongodb://localhost:27070/shared-lists', (err, db) => {
-    if (err) throw err;
-
-    ids.forEach((id) => {
-        db.db('shared-lists').collection('lists').deleteOne({ _id: id }, (err, res) => {
+        const id = db.db(dbName).collection(collectionName).insertOne(list, (err, res)=>{
             if (err) throw err;
-            console.log(res);
             db.close();
+            return res.insertedId;
         });
+        console.log(id);
     });
-});
+    list.id = id;
+    return list;
+}
+
+const newList = createNewList('newList',false);
+// console.log(newList);
