@@ -19,7 +19,7 @@
   },
   "scripts": {
     "build": "tsc",
-    "start": "node src/index",
+    "start": "node dist/index",
     "test": "mocha"
   },
   "repository": {
