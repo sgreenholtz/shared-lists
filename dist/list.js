@@ -1,27 +1,26 @@
 "use strict";
-exports.__esModule = true;
-var List = /** @class */ (function () {
-    function List(listName, privateList) {
+Object.defineProperty(exports, "__esModule", { value: true });
+class List {
+    constructor(listName, privateList) {
         this.alias = listName;
         this.privateList = privateList;
         this.id = null;
     }
-    List.prototype.removeListItem = function (id) {
-        this.items = this.items.filter(function (element) {
+    removeListItem(id) {
+        this.items = this.items.filter((element) => {
             return element.id != id;
         });
-    };
-    List.prototype.isListPrivate = function () {
+    }
+    isListPrivate() {
         return this.privateList;
-    };
-    List.prototype.setId = function (id) {
+    }
+    setId(id) {
         this.id = id;
-    };
-    return List;
-}());
+    }
+}
 exports.List = List;
 function addListItem(list, item) {
-    var listItem = {
+    const listItem = {
         id: null,
         title: item
     };
@@ -29,3 +28,4 @@ function addListItem(list, item) {
     return list;
 }
 exports.addListItem = addListItem;
+//# sourceMappingURL=list.js.map

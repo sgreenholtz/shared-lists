@@ -1,18 +1,11 @@
-import {ListRepository} from './list-repo-interface';
-import {List, ListEntry} from './list';
-import Database = require('better-sqlite3');
-
-export interface ListRepositoryOptions {
-    debug?:boolean, 
-    dbCustomLocation?:string
-}
-
-export class ListRepositoryImpl implements ListRepository {
-
-    private dbLocation = __dirname + '/shared-lists.db';
-    private db:any;
-    constructor(options?:ListRepositoryOptions) {
-        const driverOptions = {fileMustExist: true, verbose:null};
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const list_1 = require("./list");
+const Database = require("better-sqlite3");
+class ListRepositoryImpl {
+    constructor(options) {
+        this.dbLocation = __dirname + '/shared-lists.db';
+        const driverOptions = { fileMustExist: true, verbose: null };
         if (options) {
             console.log(`Creating database driver with custom options`);
             if (options.debug) {
@@ -20,28 +13,28 @@ export class ListRepositoryImpl implements ListRepository {
             }
             if (options.dbCustomLocation) {
                 this.db = new Database(options.dbCustomLocation, driverOptions);
-            } else {
+            }
+            else {
                 this.db = new Database(this.dbLocation, driverOptions);
             }
-        } else {
+        }
+        else {
             console.log('Creating default database driver');
             this.db = new Database(this.dbLocation, driverOptions);
         }
-       
     }
-
-    createNewList(name: string, isPrivate: boolean): List {
+    createNewList(name, isPrivate) {
         if (this.listExists(name)) {
             return null;
         }
-        const newList = new List(name, isPrivate);
+        const newList = new list_1.List(name, isPrivate);
         const sql = 'INSERT INTO list (alias,private) VALUES (?,?)';
-        const params = [name, (isPrivate?1:0)];
-        const results=this.db.prepare(sql).run(params);
+        const params = [name, (isPrivate ? 1 : 0)];
+        const results = this.db.prepare(sql).run(params);
         newList.setId(results.lastInsertRowid);
         return newList;
-    }    
-    addListItem(listId: string, listItem: string): ListEntry {
+    }
+    addListItem(listId, listItem) {
         if (this.listExistsById(listId)) {
             const sql = 'INSERT INTO list_item (list_id, text) VALUES (?,?)';
             const results = this.db.prepare(sql).run(listId, listItem);
@@ -50,52 +43,58 @@ export class ListRepositoryImpl implements ListRepository {
                     id: results.lastInsertRowid,
                     title: listItem
                 };
-            } else {
+            }
+            else {
                 return null;
             }
-        } else {
+        }
+        else {
             return null;
         }
     }
-    listExistsById(listId: string) : boolean {
+    listExistsById(listId) {
         const sql = 'SELECT * FROM list WHERE list_id=?';
         const results = this.db.prepare(sql).get(listId);
         return (results != null);
     }
-    listExists(listName: string): boolean {
+    listExists(listName) {
         return (this.getList(listName) != null);
     }
-    completeListItem(listId: string, listItemId: number): boolean {
+    completeListItem(listId, listItemId) {
         const sql = 'DELETE FROM list_item WHERE list_item_id=?';
         const results = this.db.prepare(sql).run(listItemId);
-        return (results.changes===1);
+        return (results.changes === 1);
     }
-    deleteList(listId: string): boolean {
+    deleteList(listId) {
         if (this.clearList(listId)) {
             const sql = 'DELETE FROM list WHERE list_id=?';
             const results = this.db.prepare(sql).run(listId);
-            return (results.changes===1);
-        } else {
+            return (results.changes === 1);
+        }
+        else {
             return false;
         }
     }
-    clearList(listId: string): boolean {
+    clearList(listId) {
         const sql = 'DELETE FROM list_item WHERE list_id=?';
         const results = this.db.prepare(sql).run(listId);
-        return (results.changes>0);
+        return (results.changes > 0);
     }
-    printAllLists(): void {
+    printAllLists() {
         console.log(this.db.prepare('SELECT * FROM list').all());
     }
-    getList(listName:string): List {
+    getList(listName) {
         const sql = 'SELECT list_id, alias, private FROM list WHERE alias=?';
         const results = this.db.prepare(sql).get(listName);
         if (results) {
-            const retreivedList = new List(results.alias, results.private);
+            const retreivedList = new list_1.List(results.alias, results.private);
             retreivedList.setId(results.list_id);
             return retreivedList;
-        } else {
+        }
+        else {
             return null;
         }
     }
 }
+exports.ListRepositoryImpl = ListRepositoryImpl;
+//# sourceMappingURL=list-repo-sqlite.js.map
