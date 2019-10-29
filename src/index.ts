@@ -1,13 +1,10 @@
-import {ListRepositoryImpl} from './list-repo-mongo';
+import {ListRepositoryImpl} from './list-repo-sqlite';
 import express = require('express');
-
 
 const app = express();
 const port = 3000;
 const listRepo = new ListRepositoryImpl();
 
-//TODO: Null checks!!
-//TODO: What happens if I pass in the ID of a list or a list-item that doesn't exist?
 app.use(express.json());
 app.listen(port, ()=>{ console.log(`Listening on ${port}`) });
 app.get('/list',(req,res)=>{res.send('This is the shared list API')});
@@ -56,9 +53,10 @@ app.post('/list/item/add', (req,res)=>{
     const listId = req.body.listId;
     const itemName = req.body.itemName;
     console.log(`Adding ${itemName} to list ${listId}`);
-    const successfullyAdded = listRepo.addListItem(listId, itemName);
-    if (successfullyAdded) {
-        res.sendStatus(201);
+    const listItem = listRepo.addListItem(listId, itemName);
+    if (listItem) {
+        res.type('application/json');
+        res.status(201).send(listItem).end();
     } else {
         res.sendStatus(500);
     }

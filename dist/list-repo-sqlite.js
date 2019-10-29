@@ -4,7 +4,7 @@ const list_1 = require("./list");
 const Database = require("better-sqlite3");
 class ListRepositoryImpl {
     constructor(options) {
-        this.dbLocation = __dirname + '/shared-lists.db';
+        this.dbLocation = __dirname + '/db/shared-lists.db';
         const driverOptions = { fileMustExist: true, verbose: null };
         if (options) {
             console.log(`Creating database driver with custom options`);

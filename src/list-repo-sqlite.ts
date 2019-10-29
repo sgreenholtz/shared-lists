@@ -9,7 +9,7 @@ export interface ListRepositoryOptions {
 
 export class ListRepositoryImpl implements ListRepository {
 
-    private dbLocation = __dirname + '/shared-lists.db';
+    private dbLocation = __dirname + '/db/shared-lists.db';
     private db:any;
     constructor(options?:ListRepositoryOptions) {
         const driverOptions = {fileMustExist: true, verbose:null};
